@@ -1,0 +1,1 @@
+  docker-image-jenkins-master
