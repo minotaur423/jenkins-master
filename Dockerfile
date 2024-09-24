@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.414.1-jdk17
+FROM jenkins/jenkins:2.462-jdk17
 
 USER root
 
@@ -15,10 +15,6 @@ RUN echo \
 RUN apt-get update -qq
 RUN apt-get install -qqy docker-ce
 
-COPY jenkins_proxy.sh /usr/local/bin/jenkins_proxy.sh
-RUN chmod +x /usr/local/bin/jenkins_proxy.sh
-RUN chown -R jenkins /usr/local/bin/jenkins_proxy.sh
-
 USER jenkins
 
-ENTRYPOINT ["/usr/bin/tini", "--", "/bin/bash", "-o", "xtrace", "-e", "/usr/local/bin/jenkins_proxy.sh"]
+RUN jenkins-plugin-cli
