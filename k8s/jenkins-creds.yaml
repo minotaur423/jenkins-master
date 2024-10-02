@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  password:
+  username:
+kind: Secret
+metadata:
+  name: jenkins-creds
+  namespace: devops-tools
+type: kubernetes.io/basic-auth
