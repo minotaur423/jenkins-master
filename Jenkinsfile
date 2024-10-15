@@ -4,6 +4,7 @@ pipeline {
     disableConcurrentBuilds()
   }
   environment {
+    project = 'jenkins-master'
     tag = 'default'
     commitNum = 'default'
   }
@@ -25,18 +26,14 @@ pipeline {
     stage('Build Docker') {
       steps {
           timeout(15) {
-            //sh "${gradleCommand}:buildDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}.${commitNum}"
-            //sh "${gradleCommand}:buildDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}-latest"
+            sh "docker build -t ${ARTIFACTORY_DOCKER_URL}/docker-local/${project}:${tag}.${commitNum} ."
           }
-        }
       }
     }
     stage('Push Docker') {
       steps {
-        //dir("_smart-development/build-sets/${buildSet}") {
-          //sh "${gradleCommand}:pushDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}.${commitNum}"
-          //sh "${gradleCommand}:pushDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}-latest"
-        //}
+          sh "docker login -u ${ARTIFACTORY_DOCKER_USER} -p ${ARTIFACTORY_DOCKER_PWD} ${ARTIFACTORY_DOCKER_URL}"
+          sh "docker push ${ARTIFACTORY_DOCKER_URL}/docker-local/${project}:${tag}.${commitNum}"
       }
     }
   }
