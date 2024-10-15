@@ -11,8 +11,7 @@ pipeline {
     stage('Preparation') {
       steps {
         echo "STARTED:\nJob '${env.JOB_NAME} [${env.BUILD_NUMBER}]'\n(${env.BUILD_URL})"
-        checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: "${env.GIT_COMMIT}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'RelativeTargetDirectory', relativeTargetDir: "${buildSet}/${projectDir}"], [$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false], [$class: 'LocalBranch', localBranch: "${env.BRANCH_NAME}"]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'jenkins', url: "https://bitbucket.org/dsnyecm/${projectDir}.git"]]]
-        checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: smartDev]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'jenkins', url: 'https://bitbucket.org/dsnyecm/smart-development.git']]]
+        checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'git-hub', url: 'https://github.com/minotaur423/jenkins-master.git']])
         script {
           commitNum = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
           if(env.BRANCH_NAME.contains('/')) {
@@ -25,20 +24,19 @@ pipeline {
     }
     stage('Build Docker') {
       steps {
-        dir("_smart-development/build-sets/${buildSet}") {
           timeout(15) {
-            sh "${gradleCommand}:buildDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}.${commitNum}"
-            sh "${gradleCommand}:buildDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}-latest"
+            //sh "${gradleCommand}:buildDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}.${commitNum}"
+            //sh "${gradleCommand}:buildDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}-latest"
           }
         }
       }
     }
     stage('Push Docker') {
       steps {
-        dir("_smart-development/build-sets/${buildSet}") {
-          sh "${gradleCommand}:pushDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}.${commitNum}"
-          sh "${gradleCommand}:pushDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}-latest"
-        }
+        //dir("_smart-development/build-sets/${buildSet}") {
+          //sh "${gradleCommand}:pushDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}.${commitNum}"
+          //sh "${gradleCommand}:pushDockerOnly ${commonOptions} ${dockerOptions} -Ptag=${tag}-latest"
+        //}
       }
     }
   }
